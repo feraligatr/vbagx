@@ -1054,18 +1054,28 @@ static int MenuGame()
 	GuiTrigger trigHome;
 	trigHome.SetButtonOnlyTrigger(-1, WPAD_BUTTON_HOME | WPAD_CLASSIC_BUTTON_HOME, 0);
 
-	int xOffset=125, yOffset=65;
-	if (isBoktai) {
-		xOffset=170; yOffset=70;
-	}
+	GuiText exitBtnTxt("Exit", 22, (GXColor){0, 0, 0, 255});
+	GuiImage exitBtnImg(&btnLargeOutline);
+	GuiImage exitBtnImgOver(&btnLargeOutlineOver);
+	GuiButton exitBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+	exitBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
+	exitBtn.SetPosition(0, 160);
+	exitBtn.SetLabel(&exitBtnTxt);
+	exitBtn.SetImage(&exitBtnImg);
+	exitBtn.SetImageOver(&exitBtnImgOver);
+	exitBtn.SetSoundOver(&btnSoundOver);
+	exitBtn.SetSoundClick(&btnSoundClick);
+	exitBtn.SetTrigger(trigA);
+	exitBtn.SetTrigger(trig2);
+	exitBtn.SetEffectGrow();
 
 	GuiText saveBtnTxt("Save", 22, (GXColor){0, 0, 0, 255});
-	GuiImage saveBtnImg(&btnLargeOutline);
-	GuiImage saveBtnImgOver(&btnLargeOutlineOver);
+	GuiImage saveBtnImg(&btnCloseOutline);
+	GuiImage saveBtnImgOver(&btnCloseOutlineOver);
 	GuiImage saveBtnIcon(&iconSave);
-	GuiButton saveBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+	GuiButton saveBtn(btnCloseOutline.GetWidth(), btnCloseOutline.GetHeight());
 	saveBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	saveBtn.SetPosition(-xOffset, 185-yOffset);
+	saveBtn.SetPosition(-150, 320);
 	saveBtn.SetLabel(&saveBtnTxt);
 	saveBtn.SetImage(&saveBtnImg);
 	saveBtn.SetImageOver(&saveBtnImgOver);
@@ -1077,12 +1087,12 @@ static int MenuGame()
 	saveBtn.SetEffectGrow();
 
 	GuiText loadBtnTxt("Load", 22, (GXColor){0, 0, 0, 255});
-	GuiImage loadBtnImg(&btnLargeOutline);
-	GuiImage loadBtnImgOver(&btnLargeOutlineOver);
+	GuiImage loadBtnImg(&btnCloseOutline);
+	GuiImage loadBtnImgOver(&btnCloseOutlineOver);
 	GuiImage loadBtnIcon(&iconLoad);
-	GuiButton loadBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+	GuiButton loadBtn(btnCloseOutline.GetWidth(), btnCloseOutline.GetHeight());
 	loadBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	loadBtn.SetPosition(xOffset, 185-yOffset);
+	loadBtn.SetPosition(-50, 320);
 	loadBtn.SetLabel(&loadBtnTxt);
 	loadBtn.SetImage(&loadBtnImg);
 	loadBtn.SetImageOver(&loadBtnImgOver);
@@ -1127,12 +1137,12 @@ static int MenuGame()
 	}
 
 	GuiText resetBtnTxt("Reset", 22, (GXColor){0, 0, 0, 255});
-	GuiImage resetBtnImg(&btnLargeOutline);
-	GuiImage resetBtnImgOver(&btnLargeOutlineOver);
+	GuiImage resetBtnImg(&btnCloseOutline);
+	GuiImage resetBtnImgOver(&btnCloseOutlineOver);
 	GuiImage resetBtnIcon(&iconReset);
-	GuiButton resetBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+	GuiButton resetBtn(btnCloseOutline.GetWidth(), btnCloseOutline.GetHeight());
 	resetBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	resetBtn.SetPosition(xOffset, 185+yOffset);
+	resetBtn.SetPosition(50, 320);
 	resetBtn.SetLabel(&resetBtnTxt);
 	resetBtn.SetImage(&resetBtnImg);
 	resetBtn.SetImageOver(&resetBtnImgOver);
@@ -1144,13 +1154,13 @@ static int MenuGame()
 	resetBtn.SetEffectGrow();
 
 	GuiText gameSettingsBtnTxt("Game Settings", 22, (GXColor){0, 0, 0, 255});
-	gameSettingsBtnTxt.SetWrap(true, btnLargeOutline.GetWidth()-30);
-	GuiImage gameSettingsBtnImg(&btnLargeOutline);
-	GuiImage gameSettingsBtnImgOver(&btnLargeOutlineOver);
+	gameSettingsBtnTxt.SetWrap(true, btnCloseOutline.GetWidth()-30);
+	GuiImage gameSettingsBtnImg(&btnCloseOutline);
+	GuiImage gameSettingsBtnImgOver(&btnCloseOutlineOver);
 	GuiImage gameSettingsBtnIcon(&iconGameSettings);
-	GuiButton gameSettingsBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+	GuiButton gameSettingsBtn(btnCloseOutline.GetWidth(), btnCloseOutline.GetHeight());
 	gameSettingsBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	gameSettingsBtn.SetPosition(-xOffset, 185+yOffset);
+	gameSettingsBtn.SetPosition(150, 320);
 	gameSettingsBtn.SetLabel(&gameSettingsBtnTxt);
 	gameSettingsBtn.SetImage(&gameSettingsBtnImg);
 	gameSettingsBtn.SetImageOver(&gameSettingsBtnImgOver);
@@ -1240,6 +1250,7 @@ static int MenuGame()
 	w.Append(&saveBtn);
 	w.Append(&loadBtn);
 	w.Append(&resetBtn);
+	w.Append(&exitBtn);
 	w.Append(&gameSettingsBtn);
 	if (isBoktai)
 		w.Append(sunBtn);
@@ -1413,6 +1424,10 @@ static int MenuGame()
 
 			w.SetEffect(EFFECT_FADE, -15);
 			usleep(350000); // wait for effects to finish
+		}
+		else if(exitBtn.GetState() == STATE_CLICKED)
+		{
+			ExitRequested = true;
 		}
 	}
 

@@ -111,7 +111,6 @@ u32 systemGetClock( void )
 	return diff_usec(start, now) / 1000;
 }
 
-void systemFrame() {}
 void systemScreenCapture(int a) {}
 void systemShowSpeed(int speed) {}
 void systemGbBorderOn() {}
@@ -122,51 +121,27 @@ bool systemPauseOnFrame()
 }
 
 static u32 lastTime = 0;
-#define RATE60HZ 166666.67 // 1/6 second or 166666.67 usec
 
-void system10Frames(int rate)
+#define expected_fps 30
+#define EXPECTED_FRAME_TIME (1000000.0 / expected_fps)
+
+void systemFrame()
 {
 	u32 time = gettime();
 	u32 diff = diff_usec(lastTime, time);
 
 	// expected diff - actual diff
-	u32 timeOff = RATE60HZ - diff;
+	u32 timeOff = EXPECTED_FRAME_TIME - diff;
 
-	if(timeOff > 0 && timeOff < 100000) // we're running ahead!
+	if(timeOff > 0 && timeOff < EXPECTED_FRAME_TIME) // we're running ahead!
 		usleep(timeOff); // let's take a nap
 	else
 		timeOff = 0; // timeoff was not valid
 
-	int speed = (RATE60HZ/diff)*100;
-
-	if (cartridgeType == 2) // GBA games require frameskipping
-	{
-		// consider increasing skip
-		if(speed < 60)
-			systemFrameSkip += 4;
-		else if(speed < 70)
-			systemFrameSkip += 3;
-		else if(speed < 80)
-			systemFrameSkip += 2;
-		else if(speed < 98)
-			++systemFrameSkip;
-
-		// consider decreasing skip
-		else if(speed > 185)
-			systemFrameSkip -= 3;
-		else if(speed > 145)
-			systemFrameSkip -= 2;
-		else if(speed > 125)
-			systemFrameSkip -= 1;
-
-		// correct invalid frame skip values
-		if(systemFrameSkip > 20)
-			systemFrameSkip = 20;
-		else if(systemFrameSkip < 0)
-			systemFrameSkip = 0;
-	}
 	lastTime = gettime();
 }
+
+void system10Frames(int rate) {}
 
 /****************************************************************************
 * System

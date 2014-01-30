@@ -508,7 +508,7 @@ static bool ParseDirEntries()
 		if(entry == NULL)
 			break;
 
-		if(entry->d_name[0] == '.' && entry->d_name[1] != '.')
+		if(entry->d_name[0] == '.')
 			continue;
 
 		if(strcmp(entry->d_name, "..") == 0)

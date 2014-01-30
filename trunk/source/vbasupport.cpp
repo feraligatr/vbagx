@@ -122,8 +122,8 @@ bool systemPauseOnFrame()
 
 static u32 lastTime = 0;
 
-#define expected_fps 30
-#define EXPECTED_FRAME_TIME (1000000.0 / expected_fps)
+int vba_expected_fps = 30;
+#define EXPECTED_FRAME_TIME (1000000.0 / vba_expected_fps)
 
 void systemFrame()
 {

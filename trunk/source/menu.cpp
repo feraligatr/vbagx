@@ -1016,6 +1016,8 @@ static int MenuGameSelection()
 
 extern char DebugStr[50];
 
+extern int vba_expected_fps;
+
 /****************************************************************************
  * MenuGame
  *
@@ -1053,6 +1055,36 @@ static int MenuGame()
 
 	GuiTrigger trigHome;
 	trigHome.SetButtonOnlyTrigger(-1, WPAD_BUTTON_HOME | WPAD_CLASSIC_BUTTON_HOME, 0);
+
+	GuiText speedUpBtnTxt("+++++", 22, (GXColor){0, 0, 0, 255});
+	GuiImage speedUpBtnImg(&btnOutline);
+	GuiImage speedUpBtnImgOver(&btnOutlineOver);
+	GuiButton speedUpBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
+	speedUpBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
+	speedUpBtn.SetPosition(200, 180);
+	speedUpBtn.SetLabel(&speedUpBtnTxt);
+	speedUpBtn.SetImage(&speedUpBtnImg);
+	speedUpBtn.SetImageOver(&speedUpBtnImgOver);
+	speedUpBtn.SetSoundOver(&btnSoundOver);
+	speedUpBtn.SetSoundClick(&btnSoundClick);
+	speedUpBtn.SetTrigger(trigA);
+	speedUpBtn.SetTrigger(trig2);
+	speedUpBtn.SetEffectGrow();
+
+	GuiText speedDownBtnTxt("-----", 22, (GXColor){0, 0, 0, 255});
+	GuiImage speedDownBtnImg(&btnOutline);
+	GuiImage speedDownBtnImgOver(&btnOutlineOver);
+	GuiButton speedDownBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
+	speedDownBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
+	speedDownBtn.SetPosition(-200, 180);
+	speedDownBtn.SetLabel(&speedDownBtnTxt);
+	speedDownBtn.SetImage(&speedDownBtnImg);
+	speedDownBtn.SetImageOver(&speedDownBtnImgOver);
+	speedDownBtn.SetSoundOver(&btnSoundOver);
+	speedDownBtn.SetSoundClick(&btnSoundClick);
+	speedDownBtn.SetTrigger(trigA);
+	speedDownBtn.SetTrigger(trig2);
+	speedDownBtn.SetEffectGrow();
 
 	GuiText exitBtnTxt("Exit", 22, (GXColor){0, 0, 0, 255});
 	GuiImage exitBtnImg(&btnLargeOutline);
@@ -1251,6 +1283,8 @@ static int MenuGame()
 	w.Append(&loadBtn);
 	w.Append(&resetBtn);
 	w.Append(&exitBtn);
+	w.Append(&speedUpBtn);
+	w.Append(&speedDownBtn);
 	w.Append(&gameSettingsBtn);
 	if (isBoktai)
 		w.Append(sunBtn);
@@ -1428,6 +1462,56 @@ static int MenuGame()
 		else if(exitBtn.GetState() == STATE_CLICKED)
 		{
 			ExitRequested = true;
+		}
+		else if(speedUpBtn.GetState() == STATE_CLICKED)
+		{
+			vba_expected_fps *= 2;
+			if (vba_expected_fps > 60)
+				vba_expected_fps = 60;
+
+			menu = MENU_EXIT;
+
+			exitSound->Play();
+			bgTopImg->SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			closeBtn.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			titleTxt.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			mainmenuBtn.SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			bgBottomImg->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			btnLogo->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			#ifdef HW_RVL
+			batteryBtn[0]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[1]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[2]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[3]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			#endif
+
+			w.SetEffect(EFFECT_FADE, -15);
+			usleep(350000); // wait for effects to finish
+		}
+		else if(speedDownBtn.GetState() == STATE_CLICKED)
+		{
+			vba_expected_fps /= 2;
+			if (vba_expected_fps <= 0)
+				vba_expected_fps = 1;
+
+			menu = MENU_EXIT;
+
+			exitSound->Play();
+			bgTopImg->SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			closeBtn.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			titleTxt.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			mainmenuBtn.SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			bgBottomImg->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			btnLogo->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			#ifdef HW_RVL
+			batteryBtn[0]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[1]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[2]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			batteryBtn[3]->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			#endif
+
+			w.SetEffect(EFFECT_FADE, -15);
+			usleep(350000); // wait for effects to finish
 		}
 	}
 

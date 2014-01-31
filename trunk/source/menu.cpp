@@ -1071,7 +1071,7 @@ static int MenuGame()
 	speedUpBtn.SetTrigger(trig2);
 	speedUpBtn.SetEffectGrow();
 
-	GuiText speedDownBtnTxt("-----", 22, (GXColor){0, 0, 0, 255});
+	GuiText speedDownBtnTxt("- - - - -", 22, (GXColor){0, 0, 0, 255});
 	GuiImage speedDownBtnImg(&btnOutline);
 	GuiImage speedDownBtnImgOver(&btnOutlineOver);
 	GuiButton speedDownBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
@@ -1282,12 +1282,12 @@ static int MenuGame()
 	w.Append(&saveBtn);
 	w.Append(&loadBtn);
 	w.Append(&resetBtn);
-	w.Append(&exitBtn);
-	w.Append(&speedUpBtn);
-	w.Append(&speedDownBtn);
 	w.Append(&gameSettingsBtn);
 	if (isBoktai)
 		w.Append(sunBtn);
+	w.Append(&exitBtn);
+	w.Append(&speedUpBtn);
+	w.Append(&speedDownBtn);
 
 	#ifdef HW_RVL
 	w.Append(batteryBtn[0]);

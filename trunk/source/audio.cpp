@@ -24,7 +24,7 @@ static int head = 0;
 static int tail = 0;
 static int gameType = 0;
 
-#define MIXBUFFSIZE 0x10000
+#define MIXBUFFSIZE 0x40000
 static u8 mixerdata[MIXBUFFSIZE];
 #define MIXERMASK ((MIXBUFFSIZE >> 2) - 1)
 #define SWAP(x) ((x>>16)|(x<<16)) // for reversing stereo channels
@@ -161,6 +161,8 @@ SoundWii::SoundWii()
 	memset(mixerdata, 0, MIXBUFFSIZE);
 }
 
+extern int vba_expected_fps;
+
 /****************************************************************************
 * SoundWii::write
 *
@@ -183,6 +185,8 @@ void SoundWii::write(u16 * finalWave, int length)
 	if (gameType == 2) // length = 1468 - GBA
 		fixinc = 30065;
 
+	fixinc /= vba_expected_fps;
+	intlen *= vba_expected_fps;
 	do
 	{
 		// Do simple linear interpolate, and swap channels from L-R to R-L

@@ -1053,6 +1053,8 @@ static int MenuGame()
 {
 	int menu = MENU_NONE;
 
+	bool isML1 = (!strcmp(ROMFilename, "Super Mario Land (W) (V1.1) [!]"));
+
 	// Weather menu if a game with Boktai solar sensor
 	bool isBoktai = ((RomIdCode & 0xFF)=='U');
     char s[64];
@@ -1087,7 +1089,7 @@ static int MenuGame()
 	GuiImage speedUpBtnImgOver(&btnOutlineOver);
 	GuiButton speedUpBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
 	speedUpBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	speedUpBtn.SetPosition(200, 130);
+	speedUpBtn.SetPosition(200, 110);
 	speedUpBtn.SetLabel(&speedUpBtnTxt);
 	speedUpBtn.SetImage(&speedUpBtnImg);
 	speedUpBtn.SetImageOver(&speedUpBtnImgOver);
@@ -1102,7 +1104,7 @@ static int MenuGame()
 	GuiImage speedDownBtnImgOver(&btnOutlineOver);
 	GuiButton speedDownBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
 	speedDownBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	speedDownBtn.SetPosition(-200, 130);
+	speedDownBtn.SetPosition(-200, 110);
 	speedDownBtn.SetLabel(&speedDownBtnTxt);
 	speedDownBtn.SetImage(&speedDownBtnImg);
 	speedDownBtn.SetImageOver(&speedDownBtnImgOver);
@@ -1117,7 +1119,7 @@ static int MenuGame()
 	GuiImage exitBtnImgOver(&btnLargeOutlineOver);
 	GuiButton exitBtn(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
 	exitBtn.SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
-	exitBtn.SetPosition(0, 110);
+	exitBtn.SetPosition(0, 90);
 	exitBtn.SetLabel(&exitBtnTxt);
 	exitBtn.SetImage(&exitBtnImg);
 	exitBtn.SetImageOver(&exitBtnImgOver);
@@ -1156,6 +1158,28 @@ static int MenuGame()
 	quickLoadBtn.SetTrigger(trigA);
 	quickLoadBtn.SetTrigger(trig2);
 	quickLoadBtn.SetEffectGrow();
+
+	GuiText *ml1LoadStageBtnTxt = NULL;
+	GuiImage *ml1LoadStageBtnImg = NULL;
+	GuiImage *ml1LoadStageBtnImgOver = NULL;
+	GuiButton *ml1LoadStageBtn = NULL;
+	if (isML1)
+	{
+		ml1LoadStageBtnTxt = new GuiText("Load Stage", 22, (GXColor){0, 0, 0, 255});
+		ml1LoadStageBtnImg = new GuiImage(&btnLargeOutline);
+		ml1LoadStageBtnImgOver = new GuiImage(&btnLargeOutlineOver);
+		ml1LoadStageBtn = new GuiButton(btnLargeOutline.GetWidth(), btnLargeOutline.GetHeight());
+		ml1LoadStageBtn->SetAlignment(ALIGN_CENTRE, ALIGN_TOP);
+		ml1LoadStageBtn->SetPosition(0, 200);
+		ml1LoadStageBtn->SetLabel(ml1LoadStageBtnTxt);
+		ml1LoadStageBtn->SetImage(ml1LoadStageBtnImg);
+		ml1LoadStageBtn->SetImageOver(ml1LoadStageBtnImgOver);
+		ml1LoadStageBtn->SetSoundOver(&btnSoundOver);
+		ml1LoadStageBtn->SetSoundClick(&btnSoundClick);
+		ml1LoadStageBtn->SetTrigger(trigA);
+		ml1LoadStageBtn->SetTrigger(trig2);
+		ml1LoadStageBtn->SetEffectGrow();
+	}
 
 	GuiText saveBtnTxt("Save", 22, (GXColor){0, 0, 0, 255});
 	GuiImage saveBtnImg(&btnCloseOutline);
@@ -1346,6 +1370,8 @@ static int MenuGame()
 	w.Append(&speedDownBtn);
 	w.Append(&quickSaveBtn);
 	w.Append(&quickLoadBtn);
+	if (isML1)
+		w.Append(ml1LoadStageBtn);
 
 	#ifdef HW_RVL
 	w.Append(batteryBtn[0]);
@@ -1452,6 +1478,13 @@ static int MenuGame()
 				++SunBars;
 				if (SunBars>10) SunBars=0;
 				menu = MENU_GAME;
+			}
+		}
+		if (isML1)
+		{
+			if(ml1LoadStageBtn->GetState() == STATE_CLICKED)
+			{
+				menu = MENU_ML1LOADSTAGE;
 			}
 		}
 
@@ -1621,6 +1654,14 @@ static int MenuGame()
 
 	HaltGui();
 
+	if (isML1)
+	{
+		delete ml1LoadStageBtnTxt;
+		delete ml1LoadStageBtnImg;
+		delete ml1LoadStageBtnImgOver;
+		delete ml1LoadStageBtn;
+	}
+
 	if (isBoktai) {
 		delete sunBtnTxt;
 		delete sunBtnImg;
@@ -1639,6 +1680,194 @@ static int MenuGame()
 	#endif
 
 	mainWindow->Remove(&w);
+	return menu;
+}
+
+/****************************************************************************
+ * MenuML1LoadStage
+ *
+ * Load a save from Specific Level.
+ ***************************************************************************/
+static int MenuML1LoadStage()
+{
+	int menu = MENU_NONE;
+	int i, j;
+
+	GuiText titleTxt(NULL, 26, (GXColor){255, 255, 255, 255});
+	titleTxt.SetAlignment(ALIGN_LEFT, ALIGN_TOP);
+	titleTxt.SetPosition(50,50);
+	titleTxt.SetText("Load Stage");
+
+	GuiSound btnSoundOver(button_over_pcm, button_over_pcm_size, SOUND_PCM);
+	GuiSound btnSoundClick(button_click_pcm, button_click_pcm_size, SOUND_PCM);
+	GuiImageData btnOutline(button_png);
+	GuiImageData btnOutlineOver(button_over_png);
+	GuiImageData btnCloseOutline(button_small_png);
+	GuiImageData btnCloseOutlineOver(button_small_over_png);
+
+	GuiTrigger trigHome;
+	trigHome.SetButtonOnlyTrigger(-1, WPAD_BUTTON_HOME | WPAD_CLASSIC_BUTTON_HOME, 0);
+
+	GuiText backBtnTxt("Go Back", 22, (GXColor){0, 0, 0, 255});
+	GuiImage backBtnImg(&btnOutline);
+	GuiImage backBtnImgOver(&btnOutlineOver);
+	GuiButton backBtn(btnOutline.GetWidth(), btnOutline.GetHeight());
+	backBtn.SetAlignment(ALIGN_LEFT, ALIGN_BOTTOM);
+	backBtn.SetPosition(50, -35);
+	backBtn.SetLabel(&backBtnTxt);
+	backBtn.SetImage(&backBtnImg);
+	backBtn.SetImageOver(&backBtnImgOver);
+	backBtn.SetSoundOver(&btnSoundOver);
+	backBtn.SetSoundClick(&btnSoundClick);
+	backBtn.SetTrigger(trigA);
+	backBtn.SetTrigger(trig2);
+	backBtn.SetEffectGrow();
+
+	GuiText closeBtnTxt("Close", 20, (GXColor){0, 0, 0, 255});
+	GuiImage closeBtnImg(&btnCloseOutline);
+	GuiImage closeBtnImgOver(&btnCloseOutlineOver);
+	GuiButton closeBtn(btnCloseOutline.GetWidth(), btnCloseOutline.GetHeight());
+	closeBtn.SetAlignment(ALIGN_RIGHT, ALIGN_TOP);
+	closeBtn.SetPosition(-50, 35);
+	closeBtn.SetLabel(&closeBtnTxt);
+	closeBtn.SetImage(&closeBtnImg);
+	closeBtn.SetImageOver(&closeBtnImgOver);
+	closeBtn.SetSoundOver(&btnSoundOver);
+	closeBtn.SetSoundClick(&btnSoundClick);
+	closeBtn.SetTrigger(trigA);
+	closeBtn.SetTrigger(trig2);
+	closeBtn.SetTrigger(&trigHome);
+	closeBtn.SetEffectGrow();
+
+	const int STAGES = 4;
+	const int LEVELS = 3;
+
+	GuiText *lvlBtnTxt[STAGES][LEVELS];
+	GuiImage *lvlBtnImg[STAGES][LEVELS];
+	GuiImage *lvlBtnImgOver[STAGES][LEVELS];
+	GuiButton *lvlBtn[STAGES][LEVELS];
+	char lvlBtnStr[STAGES][LEVELS][4];
+
+	for (i = 0; i < STAGES; i ++)
+	{
+		for (j = 0; j < LEVELS; j ++)
+		{
+			lvlBtnStr[i][j][0] = '1' + i;
+			lvlBtnStr[i][j][1] = '-';
+			lvlBtnStr[i][j][2] = '1' + j;
+			lvlBtnStr[i][j][3] = '\0';
+
+			lvlBtnTxt[i][j] = new GuiText(lvlBtnStr[i][j], 20, (GXColor){0, 0, 0, 255});
+			lvlBtnImg[i][j] = new GuiImage(&btnOutline);
+			lvlBtnImgOver[i][j] = new GuiImage(&btnOutlineOver);
+			lvlBtn[i][j] = new GuiButton(btnOutline.GetWidth(), btnOutline.GetHeight());
+			lvlBtn[i][j]->SetAlignment(ALIGN_LEFT, ALIGN_TOP);
+			lvlBtn[i][j]->SetPosition(j * 200, 100 + i * 70);
+			lvlBtn[i][j]->SetLabel(lvlBtnTxt[i][j]);
+			lvlBtn[i][j]->SetImage(lvlBtnImg[i][j]);
+			lvlBtn[i][j]->SetImageOver(lvlBtnImgOver[i][j]);
+			lvlBtn[i][j]->SetSoundOver(&btnSoundOver);
+			lvlBtn[i][j]->SetSoundClick(&btnSoundClick);
+			lvlBtn[i][j]->SetTrigger(trigA);
+			lvlBtn[i][j]->SetTrigger(trig2);
+			lvlBtn[i][j]->SetTrigger(&trigHome);
+			lvlBtn[i][j]->SetEffectGrow();
+		}
+	}
+
+	HaltGui();
+	GuiWindow w(screenwidth, screenheight);
+	w.Append(&titleTxt);
+	w.Append(&backBtn);
+	w.Append(&closeBtn);
+	for (i = 0; i < STAGES; i ++)
+	{
+		for (j = 0; j < LEVELS; j ++)
+		{
+			w.Append(lvlBtn[i][j]);
+		}
+	}
+	mainWindow->Append(&w);
+	ResumeGui();
+
+	while(menu == MENU_NONE)
+	{
+		int stage = 0, level = 0;
+		usleep(THREAD_SLEEP);
+
+		if(backBtn.GetState() == STATE_CLICKED)
+		{
+			menu = MENU_GAME;
+		}
+		else if(closeBtn.GetState() == STATE_CLICKED)
+		{
+			menu = MENU_EXIT;
+
+			exitSound->Play();
+			bgTopImg->SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			closeBtn.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			titleTxt.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			backBtn.SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			bgBottomImg->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			btnLogo->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+
+			w.SetEffect(EFFECT_FADE, -15);
+
+			usleep(350000); // wait for effects to finish
+		}
+		else
+		{
+			for (i = 0; i < STAGES; i ++)
+			{
+				for (j = 0; j < LEVELS; j ++)
+				{
+					if(lvlBtn[i][j]->GetState() == STATE_CLICKED)
+					{
+						stage = i + 1;
+						level = j + 1;
+						break;
+					}
+				}
+				if (stage > 0 && level > 0)
+					break;
+			}
+		}
+		if (stage > 0 && level > 0)
+		{
+			char filepath[1024];
+			sprintf(filepath, "%s%s/%s %d-%d.sgm", pathPrefix[GCSettings.SaveMethod], GCSettings.SaveFolder, ROMFilename, stage, level);
+			LoadBatteryOrState(filepath, FILE_SNAPSHOT, NOTSILENT);
+
+			menu = MENU_EXIT;
+
+			exitSound->Play();
+			bgTopImg->SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			closeBtn.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			titleTxt.SetEffect(EFFECT_SLIDE_TOP | EFFECT_SLIDE_OUT, 15);
+			backBtn.SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			bgBottomImg->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+			btnLogo->SetEffect(EFFECT_SLIDE_BOTTOM | EFFECT_SLIDE_OUT, 15);
+
+			w.SetEffect(EFFECT_FADE, -15);
+
+			usleep(350000); // wait for effects to finish
+		}
+	}
+
+	HaltGui();
+
+	mainWindow->Remove(&w);
+
+	for (i = 0; i < STAGES; i ++)
+	{
+		for (j = 0; j < LEVELS; j ++)
+		{
+			delete lvlBtn[i][j];
+			delete lvlBtnImgOver[i][j];
+			delete lvlBtnImg[i][j];
+			delete lvlBtnTxt[i][j];
+		}
+	}
 	return menu;
 }
 
@@ -4557,6 +4786,9 @@ MainMenu (int menu)
 				break;
 			case MENU_SETTINGS_NETWORK:
 				currentMenu = MenuSettingsNetwork();
+				break;
+			case MENU_ML1LOADSTAGE:
+				currentMenu = MenuML1LoadStage();
 				break;
 			default: // unrecognized menu
 				currentMenu = MenuGameSelection();

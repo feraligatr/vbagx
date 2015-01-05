@@ -24,7 +24,7 @@ static int head = 0;
 static int tail = 0;
 static int gameType = 0;
 
-#define MIXBUFFSIZE 0x10000
+#define MIXBUFFSIZE 0x40000
 static u8 mixerdata[MIXBUFFSIZE];
 #define MIXERMASK ((MIXBUFFSIZE >> 2) - 1)
 #define SWAP(x) ((x>>16)|(x<<16)) // for reversing stereo channels
@@ -161,6 +161,8 @@ SoundWii::SoundWii()
 	memset(mixerdata, 0, MIXBUFFSIZE);
 }
 
+extern int vba_expected_fps;
+
 /****************************************************************************
 * SoundWii::write
 *
@@ -176,7 +178,7 @@ void SoundWii::write(u16 * finalWave, int length)
 {
 	u32 *src = (u32 *)finalWave;
 	u32 *dst = (u32 *)mixerdata;
-	const u32 dstlen = 3200;
+	const u32 dstlen = (48000 << 2) / vba_expected_fps;
 	u32 intlen = (dstlen >> 2); // 800 samples / 48000 = 60Hz
 	//u32 fixofs = 0;
 	//u32 fixinc = (length * 48000 / 3200) * 65536 / 48000;

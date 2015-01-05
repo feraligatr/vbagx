@@ -176,19 +176,26 @@ void SoundWii::write(u16 * finalWave, int length)
 {
 	u32 *src = (u32 *)finalWave;
 	u32 *dst = (u32 *)mixerdata;
-	u32 intlen = (3200 >> 2);
-	u32 fixofs = 0;
-	u32 fixinc = 60211; // length = 2940 - GB
+	const u32 dstlen = 3200;
+	u32 intlen = (dstlen >> 2); // 800 samples / 48000 = 60Hz
+	//u32 fixofs = 0;
+	//u32 fixinc = (length * 48000 / 3200) * 65536 / 48000;
+	//u32 fixinc = length << 16 / 3200;
+	//u32 fixinc = 60211; // length = 2940 - GB
 
-	if (gameType == 2) // length = 1468 - GBA
-		fixinc = 30065;
+	//if (gameType == 2) // length = 1468 - GBA
+	//	fixinc = 30065; // (30064.64)
+
+	u32 intofs = 0;
 
 	do
 	{
 		// Do simple linear interpolate, and swap channels from L-R to R-L
-		dst[head++] = SWAP(src[fixofs >> 16]);
+		//dst[head++] = SWAP(src[fixofs >> 16]);
+		dst[head++] = SWAP(src[intofs * length / dstlen]);
 		head &= MIXERMASK;
-		fixofs += fixinc;
+		//fixofs += fixinc;
+		intofs ++;
 	}
 	while( --intlen );
 

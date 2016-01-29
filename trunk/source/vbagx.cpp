@@ -363,7 +363,8 @@ int main(int argc, char *argv[])
 	InitialiseSound();
 	InitialisePalette();
 	DefaultSettings (); // Set defaults
-	InitFreeType((u8*)font_ttf, font_ttf_size); // Initialize font system
+	//InitFreeType((u8*)font_ttf, font_ttf_size); // Initialize font system
+	InitFreeTyepExternal("sd:/vbagx/font.ttf");
 #ifdef HW_RVL
 	InitMem2Manager();
 	savebuffer = (unsigned char *)mem2_malloc(SAVEBUFFERSIZE);

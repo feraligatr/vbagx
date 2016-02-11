@@ -63,13 +63,13 @@ void gbRenderLine()
     bank1 = NULL;
   }
 
-  int tile_map = 0x1800;
-  if((register_LCDC & 8) != 0)
+  int tile_map = 0x1800; // Offset to bank
+  if((register_LCDC & 8) != 0) // Bit 3 - BG Tile Map Display Select     (0=9800-9BFF, 1=9C00-9FFF)
     tile_map = 0x1c00;
 
-  int tile_pattern = 0x0800;
+  int tile_pattern = 0x0800; // Offset to bank
 
-  if((register_LCDC & 16) != 0)
+  if((register_LCDC & 16) != 0) // Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
     tile_pattern = 0x0000;
 
   int x = 0;

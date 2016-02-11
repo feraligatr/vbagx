@@ -2969,7 +2969,7 @@ void CPUInit(const char *biosFileName, bool useBiosFile)
   saveType = 0;
   useBios = false;
 
-/*  if(useBiosFile) {
+  if(useBiosFile) {
     int size = 0x4000;
     if(utilLoad(biosFileName,
                 CPUIsGBABios,
@@ -2980,7 +2980,7 @@ void CPUInit(const char *biosFileName, bool useBiosFile)
       else
         systemMessage(MSG_INVALID_BIOS_FILE_SIZE, N_("Invalid BIOS file size"));
     }
-  }*/
+  }
 
   if(!useBios) {
     memcpy(bios, myROM, sizeof(myROM));

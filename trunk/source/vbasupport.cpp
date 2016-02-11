@@ -829,6 +829,8 @@ bool LoadGBROM()
 	return gbUpdateSizes();
 }
 
+extern int gbHardware;
+
 bool LoadVBAROM()
 {
 	cartridgeType = 0;
@@ -941,9 +943,10 @@ bool LoadVBAROM()
 		{
 			gbGetHardwareType();
 
+			const char* gbBiosFileName = "sd:/vbagx/gbc_bios.bin";
 			// used for the handling of the gb Boot Rom
-			//if (gbHardware & 5)
-			//gbCPUInit(gbBiosFileName, useBios);
+			if (gbHardware & 5)
+				gbCPUInit(gbBiosFileName, useBios);
 
 			LoadPatch();
 

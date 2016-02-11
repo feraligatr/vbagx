@@ -2092,7 +2092,7 @@ void gbCPUInit(const char *biosFileName, bool useBiosFile)
   useBios = false;
   if (useBiosFile)
   {
-/*    int size = 0x100;
+    int size = 0x100;
     if(utilLoad(biosFileName,
                 CPUIsGBBios,
                 bios,
@@ -2101,7 +2101,7 @@ void gbCPUInit(const char *biosFileName, bool useBiosFile)
         useBios = true;
       else
         systemMessage(MSG_INVALID_BIOS_FILE_SIZE, N_("Invalid BOOTROM file size"));
-    }*/
+    }
   }
 }
 
